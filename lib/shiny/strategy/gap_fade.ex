@@ -1,6 +1,4 @@
 defmodule Shiny.Strategy.GapFade do
-  @moduledoc false
-
   @first_bar_hour 9
   @first_bar_minute 30
 
@@ -20,17 +18,10 @@ defmodule Shiny.Strategy.GapFade do
 
     open = Enum.at(opening, 0)
     previous_close = Enum.at(closing, 1)
+    shares = trunc(portfolio.cash / current_bar.close)
 
     cond do
       closing? && open.open < previous_close.close && current_bar.close > open.open ->
-        #        IO.inspect(
-        #          "#{current_bar.time} - gap down #{previous_close.close} -> #{open.open}, close higher #{
-        #            current_bar.close
-        #          }"
-        #        )
-
-        shares = trunc(portfolio.cash / current_bar.close)
-
         %Shiny.Order{
           symbol: symbol,
           shares: shares,
@@ -40,14 +31,6 @@ defmodule Shiny.Strategy.GapFade do
         }
 
       closing? && open.open > previous_close.close && current_bar.close < open.open ->
-        #        IO.inspect(
-        #          "#{current_bar.time} - gap up #{previous_close.close} -> #{open.open}, close lower #{
-        #            current_bar.close
-        #          }"
-        #        )
-
-        shares = trunc(portfolio.cash / current_bar.close)
-
         %Shiny.Order{
           symbol: symbol,
           shares: -shares,
@@ -57,8 +40,6 @@ defmodule Shiny.Strategy.GapFade do
         }
 
       opening? && position ->
-        #        IO.inspect("Closing position at #{current_bar.close}")
-
         %Shiny.Order{
           symbol: symbol,
           type: :close,
@@ -72,14 +53,10 @@ defmodule Shiny.Strategy.GapFade do
   end
 
   def opening_bars(bars) do
-    Enum.filter(bars, fn b ->
-      b.time.hour == @first_bar_hour && b.time.minute == @first_bar_minute
-    end)
+    Enum.filter(bars, &(&1.time.hour == @first_bar_hour && &1.time.minute == @first_bar_minute))
   end
 
   def closing_bars(bars) do
-    Enum.filter(bars, fn b ->
-      b.time.hour == @last_bar_hour && b.time.minute == @last_bar_minute
-    end)
+    Enum.filter(bars, &(&1.time.hour == @last_bar_hour && &1.time.minute == @last_bar_minute))
   end
 end

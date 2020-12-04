@@ -1,5 +1,7 @@
 defmodule Shiny.Alpaca.Client do
-  # curl "https://api.polygon.io/v2/aggs/ticker/SPY/range/5/minute/2019-01-01/2019-02-01?apiKey=$ALPACA_API_KEY
+  @moduledoc """
+  Brokerage API connector for Alpaca.  Requires the environment variables `ALPACA_API_KEY` and `ALPACA_API_SECRET` to be set.
+  """
 
   def request(path) do
     response =

@@ -1,4 +1,8 @@
 defmodule Shiny.Alpaca.QuoteStreamer do
+  @moduledoc """
+  Streams market data from Alpaca (or partner Polygon).  Requires the environment variables `ALPACA_API_KEY` and `ALPACA_API_SECRET` to be set.
+  """
+
   use WebSockex
   require Logger
 
