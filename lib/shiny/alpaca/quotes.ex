@@ -1,6 +1,6 @@
 defmodule Shiny.Alpaca.Quotes do
-  def request(symbol) do
-    response = HTTPoison.get!(url(symbol))
+  def request(symbol, days) do
+    response = HTTPoison.get!(url(symbol, days))
 
     Jason.decode!(response.body)["results"]
     |> Enum.map(fn r ->
@@ -10,19 +10,20 @@ defmodule Shiny.Alpaca.Quotes do
         low: r["l"],
         close: r["c"],
         volume: r["v"],
-        time: DateTime.from_unix!(trunc(r["t"] / 1000.0))
+        time:
+          DateTime.from_unix!(trunc(r["t"] / 1000.0)) |> DateTime.shift_zone!("America/New_York")
       }
     end)
-    |> Enum.reverse()
   end
 
-  defp url(symbol) do
+  defp url(symbol, days) do
     finish = Date.to_iso8601(Date.utc_today())
-    start = Date.to_iso8601(Date.add(Date.utc_today(), -3))
+    start = Date.to_iso8601(Date.add(Date.utc_today(), -days))
     api_key = System.get_env("ALPACA_API_KEY")
 
-    "https://api.polygon.io/v2/aggs/ticker/#{symbol}/range/5/minute/#{start}/#{finish}?apiKey=#{
+    "https://api.polygon.io/v2/aggs/ticker/#{symbol}/range/5/minute/#{start}/#{finish}?sort=asc&limit=50000&apiKey=#{
       api_key
     }"
+    |> IO.inspect()
   end
 end
