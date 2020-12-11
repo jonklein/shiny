@@ -5,7 +5,7 @@ defmodule Shiny.Strategy.GapFade do
   @last_bar_hour 15
   @last_bar_minute 55
 
-  def execute(portfolio, symbol, bars) do
+  def execute(state, portfolio, symbol, bars) do
     current_bar = Enum.at(bars, 0)
 
     opening = opening_bars(bars)
@@ -22,33 +22,42 @@ defmodule Shiny.Strategy.GapFade do
 
     cond do
       closing? && open.open < previous_close.close && current_bar.close > open.open ->
-        %Shiny.Order{
-          symbol: symbol,
-          shares: shares,
-          type: :buy,
-          limit: current_bar.close,
-          time: current_bar.time
+        {
+          state,
+          %Shiny.Order{
+            symbol: symbol,
+            shares: shares,
+            type: :buy,
+            limit: current_bar.close,
+            time: current_bar.time
+          }
         }
 
       closing? && open.open > previous_close.close && current_bar.close < open.open ->
-        %Shiny.Order{
-          symbol: symbol,
-          shares: -shares,
-          type: :buy,
-          limit: current_bar.close,
-          time: current_bar.time
+        {
+          state,
+          %Shiny.Order{
+            symbol: symbol,
+            shares: -shares,
+            type: :buy,
+            limit: current_bar.close,
+            time: current_bar.time
+          }
         }
 
       opening? && position ->
-        %Shiny.Order{
-          symbol: symbol,
-          type: :close,
-          limit: current_bar.close,
-          time: current_bar.time
+        {
+          state,
+          %Shiny.Order{
+            symbol: symbol,
+            type: :close,
+            limit: current_bar.close,
+            time: current_bar.time
+          }
         }
 
       true ->
-        nil
+        {state, nil}
     end
   end
 

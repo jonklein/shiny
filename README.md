@@ -1,6 +1,7 @@
 # Shiny 
 
-A simple Elixir algo trading system which supports basic backtesting and live execution (currently only via the Alpaca brokerage). 
+An algorithmic trading system written in Elixir, supporting basic backtesting and live execution (currently only via the Alpaca brokerage). 
+
 
 
 ## Getting Started
@@ -11,6 +12,42 @@ To get started, you'll need an Alpaca account, and the associated app and secret
 ALPACA_API_KEY=XXXXX
 ALPACA_API_SECRET=XXXXX
 ```
+
+To execute a backtest, use the `mix backtest` task along with a symbol and strategy:
+
+```
+mix backtest SPY Shiny.Strategy.MacdCross 30
+```
+
+## Strategies 
+
+See the simple MacdCross strategy for an example:
+
+
+```
+defmodule Shiny.Strategy.MacdCross do
+  # A simple demo strategy using an MACD cross.  Probably not a good idea for live trading.
+
+  def execute(state, portfolio, symbol, bars) do
+    current_bar = hd(bars)
+    closes = Enum.map(bars, & &1.close) |> Enum.slice(0, 100)
+
+    macd_histogram = TAlib.Indicators.MACD.histogram(closes)
+    position = Shiny.Portfolio.position(portfolio, symbol)
+
+    if position do
+      if(macd_histogram < 0) do
+        {state, %Shiny.Order{type: :close, symbol: symbol}}
+      end
+    else
+      if(macd_histogram > 0) do
+        {state, %Shiny.Order{type: :buy, symbol: symbol, shares: 100}}
+      end
+    end
+  end
+end
+```
+
 
 ## Disclaimer
 

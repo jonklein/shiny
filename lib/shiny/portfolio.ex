@@ -18,6 +18,8 @@ defmodule Shiny.Portfolio do
   end
 
   def buy(portfolio, time, symbol, shares, price) do
+    price = slip(price, shares)
+
     position = position(portfolio, symbol) || %{symbol: symbol, shares: 0, cost_basis: 0}
 
     new_shares = position.shares + shares
@@ -94,5 +96,11 @@ defmodule Shiny.Portfolio do
     Logger.info("Avg PNL: #{Enum.sum(pnls) / length(closing_trades)}")
     Logger.info("Max win: #{Enum.max(pnls)}")
     Logger.info("Max loss: #{Enum.min(pnls)}")
+    Logger.info("Total PNL: #{Enum.sum(pnls)}")
   end
+
+  @slip 0.00
+
+  def slip(price, shares) when shares < 0, do: price * (1.0 - @slip)
+  def slip(price, shares), do: price * (1.0 + @slip)
 end

@@ -7,7 +7,7 @@ defmodule Shiny.Alpaca.Quotes do
     Returns a list of `%Shiny.Bar{}`
   """
   def request(symbol, days) do
-    response = HTTPoison.get!(url(symbol, days))
+    response = HTTPoison.get!(url(symbol, days) |> IO.inspect())
 
     Jason.decode!(response.body)["results"]
     |> Enum.map(fn r ->
