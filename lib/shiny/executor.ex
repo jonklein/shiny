@@ -6,10 +6,10 @@ defmodule Shiny.Executor do
   end
 
   def listen(symbol, strategy) do
-    loop(%Shiny.Portfolio{}, symbol, strategy)
+    loop(%{}, %Shiny.Portfolio{}, symbol, strategy)
   end
 
-  def loop(portfolio, symbol, strategy, last_timestamp \\ ~D[1900-01-01]) do
+  def loop(state, portfolio, symbol, strategy, last_timestamp \\ ~D[1900-01-01]) do
     Logger.info("Running at #{DateTime.utc_now()}")
     bars = Shiny.Alpaca.Quotes.request(symbol, 3)
     last = List.last(bars).time
@@ -17,7 +17,7 @@ defmodule Shiny.Executor do
     if(last > last_timestamp) do
       # only execture strategy when new bars are received
       IO.puts("Executing strategy with bar ending at #{last}")
-      execute_strategy(strategy, portfolio, symbol, bars)
+      {state, portfolio} = execute_strategy(state, strategy, portfolio, symbol, bars)
     else
       IO.puts("Skipping execution: #{last}, #{last_timestamp}")
     end
@@ -25,12 +25,21 @@ defmodule Shiny.Executor do
     receive do
     after
       20_000 ->
-        loop(portfolio, symbol, strategy, last)
+        loop(state, portfolio, symbol, strategy, last)
     end
   end
 
-  def execute_strategy(strategy, portfolio, symbol, quotes) do
-    process_trade(portfolio, quotes, strategy.execute(portfolio, symbol, Enum.reverse(quotes)))
+  def execute_strategy(state, strategy, portfolio, symbol, quotes) do
+    {state, trade} = strategy.execute(state, portfolio, symbol, Enum.reverse(quotes))
+
+    portfolio =
+      process_trade(
+        portfolio,
+        quotes,
+        trade
+      )
+
+    {state, portfolio}
   end
 
   def process_trade(portfolio, _, nil) do

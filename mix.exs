@@ -27,7 +27,8 @@ defmodule Shiny.MixProject do
       {:jason, "~> 1.2"},
       {:httpoison, "~> 1.7.0"},
       {:tzdata, "~> 1.0.5"},
-      {:talib, "~> 0.3.6"}
+      {:talib, "~> 0.3.6"},
+      {:niex, path: "../niex"}
     ]
   end
 end

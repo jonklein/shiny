@@ -1,6 +1,5 @@
 defmodule Shiny do
   def start(_, args) do
-    args |> IO.inspect()
     Shiny.Executor.start_link("SPY", Shiny.Strategy.GapFade)
   end
 
