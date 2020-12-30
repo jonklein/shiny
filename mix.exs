@@ -28,7 +28,7 @@ defmodule Shiny.MixProject do
       {:httpoison, "~> 1.7.0"},
       {:tzdata, "~> 1.0.5"},
       {:talib, "~> 0.3.6"},
-      {:niex, path: "../niex"}
+      {:niex, git: "https://github.com/jonklein/niex", branch: "feature/better_errors"}
     ]
   end
 end

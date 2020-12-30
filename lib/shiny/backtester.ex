@@ -1,23 +1,25 @@
 defmodule Shiny.Backtester do
   require Logger
 
-  def backtest(symbol, strategy, days \\ 30) do
+  def backtest(symbol, strategy, days \\ 30, callback \\ nil) do
     portfolio = %Shiny.Portfolio{cash: 100_000}
     bars = Shiny.Alpaca.Quotes.request(symbol, days)
 
-    execute_backtest(%{}, strategy, portfolio, symbol, bars, 1)
+    execute_backtest(%{}, strategy, portfolio, symbol, bars, 1, callback)
     |> Shiny.Portfolio.close(List.last(bars).time, symbol, List.last(bars).close)
   end
 
-  def execute_backtest(_, _, portfolio, _, l, window) when length(l) <= window do
+  def execute_backtest(_, _, portfolio, _, l, window, _) when length(l) <= window do
     portfolio
   end
 
-  def execute_backtest(state, strategy, portfolio, symbol, bars, window) do
+  def execute_backtest(state, strategy, portfolio, symbol, bars, window, callback) do
     {portfolio, state} =
       execute_strategy(state, strategy, portfolio, symbol, Enum.slice(bars, 0, window))
 
-    execute_backtest(state, strategy, portfolio, symbol, bars, window + 1)
+    callback && callback.(portfolio, %{symbol => hd(bars).close}, state)
+
+    execute_backtest(state, strategy, portfolio, symbol, bars, window + 1, callback)
   end
 
   def execute_strategy(state, strategy, portfolio, symbol, quotes) do

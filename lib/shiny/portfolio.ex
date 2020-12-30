@@ -5,6 +5,17 @@ defmodule Shiny.Portfolio do
 
   defstruct cash: 0, positions: [], journal: []
 
+  def value(portfolio, quotes) do
+    quotes |> IO.inspect()
+
+    equity_value =
+      portfolio.positions
+      |> Enum.map(&(&1.shares * quotes[&1.symbol]))
+      |> Enum.sum()
+
+    portfolio.cash + equity_value
+  end
+
   def order(portfolio, order = %{type: :buy}) do
     buy(portfolio, order.time, order.symbol, order.shares, order.limit)
   end
