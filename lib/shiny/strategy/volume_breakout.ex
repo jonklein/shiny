@@ -1,6 +1,14 @@
 defmodule Shiny.Strategy.VolumeBreakout do
   @scale 1.2
 
+  def params() do
+    %{
+      symbols: ["SPY"],
+      timeframe: "day",
+      portfolio_value: 100_000
+    }
+  end
+
   def execute(state, portfolio, symbol, bars) do
     [first | rest] = bars
 

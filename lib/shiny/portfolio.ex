@@ -3,11 +3,9 @@ defmodule Shiny.Portfolio do
 
   require Logger
 
-  defstruct cash: 0, positions: [], journal: []
+  defstruct cash: 0, positions: [], journal: [], slippage: 0.0
 
   def value(portfolio, quotes) do
-    quotes |> IO.inspect()
-
     equity_value =
       portfolio.positions
       |> Enum.map(&(&1.shares * quotes[&1.symbol]))
@@ -28,10 +26,18 @@ defmodule Shiny.Portfolio do
     close(portfolio, order.time, order.symbol, order.limit)
   end
 
-  def buy(portfolio, time, symbol, shares, price) do
-    price = slip(price, shares)
+  def order(portfolio, order = %{type: :target}) do
+    target(portfolio, order.time, order.symbol, order.shares, order.limit)
+  end
 
-    position = position(portfolio, symbol) || %{symbol: symbol, shares: 0, cost_basis: 0}
+  def buy(portfolio, _, _, 0, _) do
+    portfolio
+  end
+
+  def buy(portfolio, time, symbol, shares, price) do
+    price = slip(portfolio.slippage, price, shares)
+
+    position = position(portfolio, symbol)
 
     new_shares = position.shares + shares
 
@@ -57,6 +63,8 @@ defmodule Shiny.Portfolio do
       cost_basis: position.cost_basis
     }
 
+    report_trade(journal)
+
     %{
       portfolio
       | cash: portfolio.cash - price * shares,
@@ -68,26 +76,41 @@ defmodule Shiny.Portfolio do
     }
   end
 
+  def report_trade(journal = %{close: true}) do
+    Logger.info(
+      "#{journal.time}: #{journal.symbol} - closing #{journal.shares} @ #{journal.price} PnL #{
+        journal.pnl
+      }"
+    )
+  end
+
+  def report_trade(journal) do
+    Logger.info("#{journal.time}: #{journal.symbol} - open #{journal.shares} @ #{journal.price}")
+  end
+
   def sell(portfolio, time, symbol, shares, price) do
     buy(portfolio, time, symbol, -shares, price)
   end
 
-  def close(portfolio, time, symbol, price) do
+  def target(portfolio, time, symbol, shares, price) do
     position = position(portfolio, symbol)
+    buy(portfolio, time, symbol, shares - position.shares, price)
+  end
 
-    if(position) do
-      sell(portfolio, time, symbol, position.shares, price)
-    else
-      portfolio
-    end
+  def close(portfolio, time, symbol, price) do
+    target(portfolio, time, symbol, 0, price)
   end
 
   def position(portfolio, symbol) do
-    Enum.find(portfolio.positions, &(&1.symbol == symbol))
+    Enum.find(portfolio.positions, &(&1.symbol == symbol)) ||
+      %{symbol: symbol, shares: 0, cost_basis: 0}
   end
 
   defp non_zero_positions(positions) do
     Enum.filter(positions, &(&1.shares != 0))
+  end
+
+  def report_csv(portfolio) do
   end
 
   def report(portfolio) do
@@ -95,23 +118,24 @@ defmodule Shiny.Portfolio do
     winning_trades = Enum.filter(closing_trades, &(&1.pnl > 0.0))
     losing_trades = Enum.filter(closing_trades, &(&1.pnl < 0.0))
     pnls = Enum.map(closing_trades, & &1.pnl)
+    max_count = max(1, length(closing_trades))
 
-    closing_trades |> IO.inspect()
+    fmt = &(trunc(&1 * 100) / 100)
 
-    Logger.info("Portfolio cash: #{portfolio.cash}")
-    Logger.info("Number of trades: #{length(portfolio.journal)}")
-    Logger.info("Number of closing trades: #{length(closing_trades)}")
-    Logger.info("Number of profitable closes: #{length(winning_trades)}")
-    Logger.info("Number of losing closes: #{length(losing_trades)}")
-    Logger.info("Win %: #{trunc(100 * length(winning_trades) / length(closing_trades))}")
-    Logger.info("Avg PNL: #{Enum.sum(pnls) / length(closing_trades)}")
-    Logger.info("Max win: #{Enum.max(pnls)}")
-    Logger.info("Max loss: #{Enum.min(pnls)}")
-    Logger.info("Total PNL: #{Enum.sum(pnls)}")
+    [
+      cash: fmt.(portfolio.cash),
+      number_of_trades: length(portfolio.journal),
+      number_of_closing_trades: length(closing_trades),
+      number_of_profitable_closes: length(winning_trades),
+      number_of_losing_closes: length(losing_trades),
+      win_percent: fmt.(100 * length(winning_trades) / max_count),
+      average_pnl: fmt.(Enum.sum(pnls) / max_count),
+      max_win: fmt.(Enum.max(pnls)),
+      max_loss: fmt.(Enum.min(pnls)),
+      total_pnl: fmt.(Enum.sum(pnls))
+    ]
   end
 
-  @slip 0.00
-
-  def slip(price, shares) when shares < 0, do: price * (1.0 - @slip)
-  def slip(price, shares), do: price * (1.0 + @slip)
+  def slip(slippage, price, shares) when shares < 0, do: price * (1.0 - slippage / 100.0)
+  def slip(slippage, price, _), do: price * (1.0 + slippage / 100.0)
 end

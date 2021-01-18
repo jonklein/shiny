@@ -5,31 +5,39 @@ defmodule Shiny.Strategy.GapFade do
   @last_bar_hour 15
   @last_bar_minute 55
 
-  def execute(state, portfolio, symbol, bars) do
-    current_bar = Enum.at(bars, 0)
+  def init([symbol]) do
+    %{
+      symbol: "SPY"
+    }
+  end
 
-    opening = opening_bars(bars)
-    closing = closing_bars(bars)
+  def params([symbol]) do
+    %{
+      symbol: "SPY",
+      symbols: ["SPY"],
+      portfolio_value: 100_000
+    }
+  end
 
-    position = Shiny.Portfolio.position(portfolio, symbol)
+  def execute(state, portfolio, bars) do
+    current_bar = Enum.at(bars[state.symbol], 0)
+    opening = opening_bars(bars[state.symbol])
+    closing = closing_bars(bars[state.symbol])
 
     closing? = length(closing) > 1 && current_bar.time == hd(closing).time
     opening? = length(opening) > 1 && current_bar.time == hd(opening).time
 
     open = Enum.at(opening, 0)
     previous_close = Enum.at(closing, 1)
-    shares = trunc(portfolio.cash / current_bar.close)
 
     cond do
       closing? && open.open < previous_close.close && current_bar.close > open.open ->
         {
           state,
           %Shiny.Order{
-            symbol: symbol,
-            shares: shares,
-            type: :buy,
-            limit: current_bar.close,
-            time: current_bar.time
+            symbol: state.symbol,
+            shares: 100,
+            type: :buy
           }
         }
 
@@ -37,22 +45,18 @@ defmodule Shiny.Strategy.GapFade do
         {
           state,
           %Shiny.Order{
-            symbol: symbol,
-            shares: -shares,
-            type: :buy,
-            limit: current_bar.close,
-            time: current_bar.time
+            symbol: state.symbol,
+            shares: -100,
+            type: :buy
           }
         }
 
-      opening? && position ->
+      opening? ->
         {
           state,
           %Shiny.Order{
-            symbol: symbol,
-            type: :close,
-            limit: current_bar.close,
-            time: current_bar.time
+            symbol: state.symbol,
+            type: :close
           }
         }
 

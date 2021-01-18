@@ -16,7 +16,7 @@ ALPACA_API_SECRET=XXXXX
 To execute a backtest, use the `mix backtest` task along with a symbol and strategy:
 
 ```
-mix backtest SPY Shiny.Strategy.MacdCross 30
+mix backtest ./config.json
 ```
 
 ## Strategies 

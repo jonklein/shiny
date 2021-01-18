@@ -1,0 +1,16 @@
+{
+  "symbols": [ "SPY" ],
+  "timeframe": "5m",
+  "strategy": "Shiny.Strategy.GapHoldFade",
+  "portfolio": {
+    "cash": 20000,
+    "slippage": 0.01
+  }, 
+  "params": { 
+    "symbol": "SPY",
+    "buy_hour": 15,
+    "buy_minute": 20,
+    "sell_hour": 15,
+    "sell_minute": 55
+  }
+}

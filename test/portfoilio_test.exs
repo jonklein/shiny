@@ -40,4 +40,18 @@ defmodule ShinyPortfoiloTest do
     assert portfolio.cash == 580
     assert portfolio.positions == [%{symbol: "SPY", shares: 1, cost_basis: 400}]
   end
+
+  test "targets" do
+    portfolio = %Shiny.Portfolio{cash: 1000}
+    portfolio = Shiny.Portfolio.buy(portfolio, DateTime.utc_now(), "SPY", 1, 400)
+    portfolio = Shiny.Portfolio.buy(portfolio, DateTime.utc_now(), "QQQ", 2, 200)
+    portfolio = Shiny.Portfolio.target(portfolio, DateTime.utc_now(), "QQQ", 4, 100)
+
+    assert portfolio.cash == 00
+
+    assert portfolio.positions == [
+             %{symbol: "SPY", shares: 1, cost_basis: 400},
+             %{symbol: "QQQ", shares: 4, cost_basis: 150}
+           ]
+  end
 end
