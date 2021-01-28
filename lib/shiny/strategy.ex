@@ -14,6 +14,7 @@ defmodule Shiny.Strategy do
 
   defp resolve_strategy(strategy) do
     {module, _} = Code.eval_string(strategy)
+    Code.ensure_loaded(module)
     module
   end
 end

@@ -121,17 +121,19 @@ defmodule Shiny.Portfolio do
     max_count = max(1, length(closing_trades))
 
     fmt = &(trunc(&1 * 100) / 100)
+    max = &((&1 == [] && 0) || Enum.max(&1))
+    min = &((&1 == [] && 0) || Enum.min(&1))
 
     [
       cash: fmt.(portfolio.cash),
+      win_percent: fmt.(100 * length(winning_trades) / max_count),
       number_of_trades: length(portfolio.journal),
       number_of_closing_trades: length(closing_trades),
       number_of_profitable_closes: length(winning_trades),
       number_of_losing_closes: length(losing_trades),
-      win_percent: fmt.(100 * length(winning_trades) / max_count),
       average_pnl: fmt.(Enum.sum(pnls) / max_count),
-      max_win: fmt.(Enum.max(pnls)),
-      max_loss: fmt.(Enum.min(pnls)),
+      max_win: fmt.(max.(pnls)),
+      max_loss: fmt.(min.(pnls)),
       total_pnl: fmt.(Enum.sum(pnls))
     ]
   end

@@ -60,6 +60,6 @@ defmodule Shiny.Backtester do
 
   defp process_trade(portfolio, quotes, trade = %Shiny.Order{}) do
     bar = hd(quotes[trade.symbol])
-    Shiny.Portfolio.order(portfolio, %{trade | time: bar.time, limit: bar.close})
+    Shiny.Portfolio.order(portfolio, %{trade | time: bar.time, limit: trade.fill || bar.close})
   end
 end

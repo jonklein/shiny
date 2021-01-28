@@ -15,7 +15,6 @@ defmodule Shiny.Strategy.MacdCross do
 
   def execute(state, _portfolio, bars) do
     closes = Enum.map(Map.get(bars, state.symbol), & &1.close) |> Enum.slice(0, 100)
-
     histo = TAlib.Indicators.MACD.histogram(closes)
 
     cond do

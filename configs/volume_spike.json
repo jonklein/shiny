@@ -1,0 +1,17 @@
+{
+  "symbols": [ "SPY" ],
+  "timeframe": "5m",
+  "strategy": "Shiny.Strategy.VolumeSpike",
+  "portfolio": {
+    "cash": 20000,
+    "slippage": 0.00
+  }, 
+  "params": { 
+    "symbol": "SPY",
+    "stop_loss_percent": 0.03,
+    "target_percent": -0.03,
+    "close_count": 3,
+    "macd_fast": 20,
+    "macd_slow": 40
+  }
+}

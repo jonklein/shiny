@@ -41,6 +41,10 @@ defmodule Shiny.Alpaca.Quotes do
     "1/minute"
   end
 
+  defp url_timeframe_fragment("15m") do
+    "15/minute"
+  end
+
   defp url_timeframe_fragment("1d") do
     "1/day"
   end

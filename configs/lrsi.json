@@ -1,0 +1,16 @@
+{
+  "symbols": [ "SPY" ],
+  "timeframe": "5m",
+  "strategy": "Shiny.Strategy.LRSI",
+  "portfolio": {
+    "cash": 20000,
+    "slippage": 0.0
+  }, 
+  "params": { 
+    "symbol": "SPY",
+    "stop_loss_percent": 0.03,
+    "target_percent": -0.03,
+    "threshold": 0.15,
+    "hold_bars": 3
+  }
+}
