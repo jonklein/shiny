@@ -1,5 +1,5 @@
 {
-  "symbols": [ "SPY" ],
+  "symbols": [ "X:BTCUSD" ],
   "timeframe": "5m",
   "strategy": "Shiny.Strategy.LRSI",
   "portfolio": {
@@ -7,7 +7,7 @@
     "slippage": 0.0
   }, 
   "params": { 
-    "symbol": "SPY",
+    "symbol": "X:BTCUSD",
     "stop_loss_percent": 0.03,
     "target_percent": -0.03,
     "threshold": 0.15,

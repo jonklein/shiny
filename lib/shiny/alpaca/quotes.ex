@@ -25,7 +25,7 @@ defmodule Shiny.Alpaca.Quotes do
   defp url(symbol, timeframe, days) do
     finish = Date.to_iso8601(Date.utc_today())
     start = Date.to_iso8601(Date.add(Date.utc_today(), -days))
-    api_key = System.get_env("ALPACA_API_KEY")
+    api_key = System.get_env("POLYGON_API_KEY")
     time_fragment = url_timeframe_fragment(timeframe)
 
     "https://api.polygon.io/v2/aggs/ticker/#{symbol}/range/#{time_fragment}/#{start}/#{finish}?sort=asc&limit=50000&apiKey=#{
