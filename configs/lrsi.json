@@ -1,13 +1,13 @@
 {
-  "symbols": [ "X:BTCUSD" ],
+  "symbols": [ "X:ETHUSD" ],
   "timeframe": "5m",
   "strategy": "Shiny.Strategy.LRSI",
   "portfolio": {
     "cash": 20000,
-    "slippage": 0.0
+    "slippage": 0.01
   }, 
   "params": { 
-    "symbol": "X:BTCUSD",
+    "symbol": "X:ETHUSD",
     "stop_loss_percent": 0.03,
     "target_percent": -0.03,
     "threshold": 0.15,

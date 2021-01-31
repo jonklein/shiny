@@ -14,7 +14,7 @@ defmodule Shiny.Strategy.LRSI do
 
     cond do
       length(bars[state.symbol]) >= state.bar_count + state.hold_bars ||
-        current.close <= state.stop || current.close > state.stop + 0.3 ->
+        current.close <= state.stop || current.close > state.stop + 15.0 ->
         {state,
          %Shiny.Order{
            symbol: state.symbol,
@@ -52,7 +52,7 @@ defmodule Shiny.Strategy.LRSI do
          %Shiny.Order{
            type: :target,
            symbol: state.symbol,
-           shares: 50,
+           shares: portfolio.cash / Enum.at(bars[state.symbol], 1).open,
            fill: Enum.at(bars[state.symbol], 1).open + 0.1
          }}
 
