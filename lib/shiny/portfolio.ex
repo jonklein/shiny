@@ -15,11 +15,11 @@ defmodule Shiny.Portfolio do
   end
 
   def order(portfolio, order = %{type: :buy}) do
-    buy(portfolio, order.time, order.symbol, order.shares, order.limit)
+    buy(portfolio, order.time, order.symbol, order.quantity, order.limit)
   end
 
   def order(portfolio, order = %{type: :sell}) do
-    sell(portfolio, order.time, order.symbol, order.shares, order.limit)
+    sell(portfolio, order.time, order.symbol, order.quantity, order.limit)
   end
 
   def order(portfolio, order = %{type: :close}) do
@@ -27,7 +27,7 @@ defmodule Shiny.Portfolio do
   end
 
   def order(portfolio, order = %{type: :target}) do
-    target(portfolio, order.time, order.symbol, order.shares, order.limit)
+    target(portfolio, order.time, order.symbol, order.quantity, order.limit)
   end
 
   def buy(portfolio, _, _, 0, _) do
@@ -36,6 +36,7 @@ defmodule Shiny.Portfolio do
 
   def buy(portfolio, time, symbol, shares, price) do
     price = slip(portfolio.slippage, price, shares)
+    time = time || DateTime.utc_now()
 
     position = position(portfolio, symbol)
 

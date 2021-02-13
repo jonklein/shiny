@@ -66,7 +66,7 @@ defmodule Shiny.Strategy.Demark9s do
     else
       if higher >= 9 do
         {%{state | entry: close, stop: close - @stop_trail, target: close + 1.4 * @stop_trail},
-         %Shiny.Order{type: :target, symbol: state.symbol, shares: 100}}
+         %Shiny.Order{type: :target, symbol: state.symbol, quantity: 100}}
       else
         {state, nil}
       end

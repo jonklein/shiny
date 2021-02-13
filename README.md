@@ -53,3 +53,15 @@ end
 
 Disclaimer: All investments and trading in the stock market involve risk. Any decisions to place trades in the financial markets, including trading in stock or options or other financial instruments is a personal decision that should only be made after thorough research, including a personal risk and financial assessment and the engagement of professional assistance to the extent you believe necessary. The trading strategies or related information mentioned in this article is for informational purposes only.
 
+
+
+
+Signal - mostly stateless, gives a -1.0 to 1.0 buy/sell signal or other info 
+
+Manager - makes decisions on position entry and exit based on signals and other factors such as implementing stops 
+or taking profits.
+
+Executor - responsible for opening and closing positions, including choosing position size and strategy.  For example, 
+a "short SPY" strategy could choose to short the underlying, buy put options, short futures, etc. 
+
+Broker - a connector for different brokerages and exchanges, including 

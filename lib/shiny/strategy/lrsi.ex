@@ -31,7 +31,7 @@ defmodule Shiny.Strategy.LRSI do
     [current | _] = bars[state.symbol]
     closes = Enum.map(bars[state.symbol], & &1.close)
 
-    lrsi2 = Breaker.Ta.lrsi(Enum.slice(Enum.map(bars[state.symbol], & &1.close), 1..20))
+    lrsi2 = Breaker.Ta.lrsi(Enum.slice(Enum.map(bars[state.symbol], & &1.close), 0..20))
 
     vol =
       Enum.slice(bars[state.symbol], 0..2)
@@ -52,7 +52,7 @@ defmodule Shiny.Strategy.LRSI do
          %Shiny.Order{
            type: :target,
            symbol: state.symbol,
-           shares: portfolio.cash / Enum.at(bars[state.symbol], 1).open,
+           quantity: portfolio.cash / Enum.at(bars[state.symbol], 1).open,
            fill: Enum.at(bars[state.symbol], 1).open + 0.1
          }}
 

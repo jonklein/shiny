@@ -5,5 +5,14 @@ defmodule Shiny.Order do
   `type` is one of :buy, :sell or :close
   """
 
-  defstruct(symbol: "", shares: 0, limit: 0, fill: nil, type: :none, time: nil)
+  defstruct(
+    symbol: "",
+    quantity: 0,
+    id: nil,
+    limit: 0,
+    price: 0.0,
+    fill: nil,
+    type: :none,
+    time: nil
+  )
 end

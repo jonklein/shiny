@@ -1,4 +1,4 @@
-defmodule Breaker.Ta.LRSI do
+defmodule Shiny.Ta.LRSI do
   @doc """
   Laguerre RSI
   """

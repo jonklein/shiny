@@ -11,7 +11,7 @@ defmodule Shiny.Bar do
           low: float,
           close: float,
           volume: integer,
-          completed: boolean
+          partial: boolean
         }
 
   defstruct(
@@ -21,6 +21,6 @@ defmodule Shiny.Bar do
     close: 0,
     time: 0,
     volume: 0,
-    completed: true
+    partial: false
   )
 end

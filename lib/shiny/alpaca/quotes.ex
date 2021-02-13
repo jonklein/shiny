@@ -1,11 +1,12 @@
 defmodule Shiny.Alpaca.Quotes do
   @moduledoc """
-  Fetches market data from Alpaca (or partner Polygon).  Requires the environment variables `ALPACA_API_KEY` and `ALPACA_API_SECRET` to be set.
+  Fetches market data from Polygon.  Requires the environment variables `POLYGON_API_KEY` to be set.
   """
 
   @doc """
-    Returns a list of `%Shiny.Bar{}`
+  Returns a list of `%Shiny.Bar{}`
   """
+  @spec request(string, string, integer) :: [%Shiny.Bar{}]
   def request(symbol, timeframe, days) do
     response = HTTPoison.get!(url(symbol, timeframe, days) |> IO.inspect())
 

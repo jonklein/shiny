@@ -17,7 +17,7 @@ defmodule Shiny.Strategy.VolumeBreakout do
 
     cond do
       !position && inside_bars(first, rest) > 5 ->
-        {state, %Shiny.Order{type: :buy, shares: 100, symbol: symbol}}
+        {state, %Shiny.Order{type: :buy, quantity: 100, symbol: symbol}}
 
       position && first.close > position.cost_basis * 1.03 ->
         {state, %Shiny.Order{type: :close, symbol: symbol}}

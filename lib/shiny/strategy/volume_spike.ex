@@ -1,6 +1,7 @@
 defmodule Shiny.Strategy.VolumeSpike do
+  import Shiny.Strategy.Utils
+
   def init(params) do
-    ##
     Map.merge(params, %{stop: nil, target: nil})
   end
 
@@ -26,12 +27,6 @@ defmodule Shiny.Strategy.VolumeSpike do
 
   defp higher_closes(_) do
     0
-  end
-
-  defp market_open?(date) do
-    t = DateTime.to_time(date)
-
-    Time.compare(t, ~T[09:30:00]) == :gt && Time.compare(t, ~T[16:00:00]) == :lt
   end
 
   def manage(state, portolio, bars) do
@@ -90,7 +85,7 @@ defmodule Shiny.Strategy.VolumeSpike do
        },
        %Shiny.Order{
          symbol: state.symbol,
-         shares: (histo1 > 0.0 && shares) || -shares,
+         quantity: (histo1 > 0.0 && shares) || -shares,
          type: :target
        }}
     else

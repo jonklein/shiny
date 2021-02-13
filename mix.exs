@@ -22,6 +22,7 @@ defmodule Shiny.MixProject do
       {:websockex, "~> 0.4.2"},
       {:hackney, "~> 1.16.0"},
       {:jason, "~> 1.2"},
+      {:timex, "~> 3.6"},
       {:csv, "~> 2.4"},
       {:httpoison, "~> 1.7.0"},
       {:tzdata, "~> 1.0.5"},

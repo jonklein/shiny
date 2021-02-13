@@ -14,7 +14,7 @@ config :niex, NiexWeb.Endpoint,
   server: true,
   debug_errors: true,
   check_origin: false,
-  http: [port: 3333],
+  http: [port: 3334],
   debug_errors: true,
   check_origin: false
 

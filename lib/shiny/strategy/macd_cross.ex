@@ -24,7 +24,7 @@ defmodule Shiny.Strategy.MacdCross do
 
       histo < state.last_histo ->
         {%{state | last_histo: histo, stop: hd(closes) - 0.1},
-         %Shiny.Order{type: :target, symbol: state.symbol, shares: 100}}
+         %Shiny.Order{type: :target, symbol: state.symbol, quantity: 100}}
 
       true ->
         {%{state | last_histo: histo, stop: max(state.stop, hd(closes) - 0.1)}, nil}

@@ -18,7 +18,7 @@ defmodule Shiny.Strategy.GapHoldFade do
           state,
           %Shiny.Order{
             symbol: state.symbol,
-            shares: shares,
+            quantity: shares,
             type: :buy
           }
         }
@@ -28,7 +28,7 @@ defmodule Shiny.Strategy.GapHoldFade do
           state,
           %Shiny.Order{
             symbol: state.symbol,
-            shares: -shares,
+            quantity: -shares,
             type: :buy
           }
         }
