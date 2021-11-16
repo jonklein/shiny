@@ -79,9 +79,7 @@ defmodule Shiny.Portfolio do
 
   def report_trade(journal = %{close: true}) do
     Logger.info(
-      "#{journal.time}: #{journal.symbol} - closing #{journal.shares} @ #{journal.price} PnL #{
-        journal.pnl
-      }"
+      "#{journal.time}: #{journal.symbol} - closing #{journal.shares} @ #{journal.price} PnL #{journal.pnl}"
     )
   end
 

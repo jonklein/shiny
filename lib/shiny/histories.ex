@@ -1,8 +1,7 @@
 defmodule Shiny.Histories do
   defstruct bars: [],
             timescale: 300,
-            symbol: "",
-            current_bar: %Shiny.Bar{}
+            symbol: ""
 
   def new(keys) do
     %__MODULE__{
@@ -21,60 +20,45 @@ defmodule Shiny.Histories do
     [first | rest] = history.bars
 
     if age(first) < history.timescale do
-      %{history | bars: rest, current_bar: first}
+      %{history | bars: [%{first | partial: true} | rest]}
     else
       history
     end
   end
 
-  def add_quote(history = %__MODULE__{bars: [first | _]}, quote = %{bid: _, ask: _}) do
+  def add_quote(history = %__MODULE__{bars: [first | rest]}, quote = %{bid: _, ask: _}) do
     age = age(first)
 
     cond do
-      #      age > history.timescale * 3 ->
-      #        # More than one bar behind - backfill with best guess (close of last updated bar)
-      #        IO.inspect("backfilling bar for #{history.symbol} #{first.time} with close")
-      #
-      #        add = %Shiny.Bar{
-      #          open: first.close,
-      #          high: first.close,
-      #          low: first.close,
-      #          close: first.close,
-      #          time: next_time(history, first),
-      #          volume: 0
-      #        }
-      #
-      #        add_quote(%{history | bars: [add | history.bars]}, quote)
-
       age > history.timescale * 2 ->
-        add = %{history.current_bar | time: next_time(history, first), partial: false}
+        [first | rest] = history.bars
+        first = %{first | time: next_time(history, hd(rest)), partial: false}
 
-        %{
-          history
-          | bars: [add | history.bars],
-            current_bar: %Shiny.Bar{
-              open: mid(quote),
-              high: mid(quote),
-              low: mid(quote),
-              close: mid(quote),
-              time: next_time(history, first)
-            }
+        add = %Shiny.Bar{
+          open: mid(quote),
+          high: mid(quote),
+          low: mid(quote),
+          close: mid(quote),
+          partial: true,
+          time: Shiny.Strategy.Utils.to_market_timezone(DateTime.utc_now())
         }
 
+        %{history | bars: [add, first | rest]}
+
       true ->
-        current_bar = %{
-          history.current_bar
-          | open: (history.current_bar.open == 0 && mid(quote)) || history.current_bar.open,
-            high: max(history.current_bar.high, mid(quote)),
+        first = %{
+          first
+          | open: (first.open == 0 && mid(quote)) || first.open,
+            high: max(first.high, mid(quote)),
             low:
-              (history.current_bar.low == 0 && mid(quote)) ||
-                min(history.current_bar.low, mid(quote)),
+              (first.low == 0 && mid(quote)) ||
+                min(first.low, mid(quote)),
             close: mid(quote),
             time: Shiny.Strategy.Utils.to_market_timezone(DateTime.utc_now()),
             partial: true
         }
 
-        %{history | current_bar: current_bar}
+        %{history | bars: [first | rest]}
     end
   end
 

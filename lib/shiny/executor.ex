@@ -11,12 +11,12 @@ defmodule Shiny.Executor do
 
   def loop(state, portfolio, symbol, strategy, last_timestamp \\ ~D[1900-01-01]) do
     Logger.info("Running at #{DateTime.utc_now()}")
-    bars = Shiny.Alpaca.Quotes.request(symbol, 3)
+    bars = Shiny.Tradier.History.request(symbol, 3, 3)
     last = List.last(bars).time
 
     {state, portfolio} =
       if(last > last_timestamp) do
-        # only execture strategy when new bars are received
+        # only execture strategy when nquote_streamer.exew bars are received
         IO.puts("Executing strategy with bar ending at #{last}")
         execute_strategy(state, strategy, portfolio, bars)
       else

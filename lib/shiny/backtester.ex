@@ -7,7 +7,7 @@ defmodule Shiny.Backtester do
     bars =
       config.symbols
       |> Enum.reduce(%{}, fn symbol, acc ->
-        Map.merge(acc, %{symbol => Shiny.Alpaca.Quotes.request(symbol, config.timeframe, 30)})
+        Map.merge(acc, %{symbol => Shiny.Polygon.Quotes.request(symbol, config.timeframe, 30)})
       end)
 
     portfolio =

@@ -1,4 +1,4 @@
-defmodule Shiny.Alpaca.QuoteStreamer do
+defmodule Shiny.Polygon.Quotestreamer do
   @moduledoc """
   Streams market data from Alpaca (or partner Polygon).  Requires the environment variables `ALPACA_API_KEY` and `ALPACA_API_SECRET` to be set.
   """
@@ -10,7 +10,7 @@ defmodule Shiny.Alpaca.QuoteStreamer do
     "wss://socket.polygon.io/stocks"
   end
 
-  def start_link(symbols) do
+  def start_link(_symbols) do
     {:ok, pid} = WebSockex.start_link(url(), __MODULE__, %{})
     WebSockex.send_frame(pid, {:text, auth()})
     WebSockex.send_frame(pid, {:text, listen()})

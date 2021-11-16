@@ -1,4 +1,4 @@
-defmodule Shiny.Alpaca.Quotes do
+defmodule Shiny.Polygon.Quotes do
   @moduledoc """
   Fetches market data from Polygon.  Requires the environment variables `POLYGON_API_KEY` to be set.
   """
@@ -6,9 +6,9 @@ defmodule Shiny.Alpaca.Quotes do
   @doc """
   Returns a list of `%Shiny.Bar{}`
   """
-  @spec request(string, string, integer) :: [%Shiny.Bar{}]
+  @spec request(String.t(), String.t(), integer) :: [%Shiny.Bar{}]
   def request(symbol, timeframe, days) do
-    response = HTTPoison.get!(url(symbol, timeframe, days) |> IO.inspect())
+    response = Shiny.HttpCache.get!(url(symbol, timeframe, days) |> IO.inspect())
 
     Jason.decode!(response.body, keys: :atoms).results
     |> Enum.map(fn r ->
@@ -29,9 +29,7 @@ defmodule Shiny.Alpaca.Quotes do
     api_key = System.get_env("POLYGON_API_KEY")
     time_fragment = url_timeframe_fragment(timeframe)
 
-    "https://api.polygon.io/v2/aggs/ticker/#{symbol}/range/#{time_fragment}/#{start}/#{finish}?sort=asc&limit=50000&apiKey=#{
-      api_key
-    }"
+    "https://api.polygon.io/v2/aggs/ticker/#{symbol}/range/#{time_fragment}/#{start}/#{finish}?sort=asc&limit=50000&apiKey=#{api_key}"
   end
 
   defp url_timeframe_fragment("5m") do

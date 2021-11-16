@@ -20,14 +20,13 @@ defmodule Shiny.MixProject do
   defp deps do
     [
       {:websockex, "~> 0.4.2"},
-      {:hackney, "~> 1.16.0"},
+      {:hackney, "~> 1.17.0"},
       {:jason, "~> 1.2"},
       {:timex, "~> 3.6"},
       {:csv, "~> 2.4"},
-      {:httpoison, "~> 1.7.0"},
+      {:httpoison, "~> 1.8.0"},
       {:tzdata, "~> 1.0.5"},
-      {:talib, "~> 0.3.6"},
-      {:niex, git: "https://github.com/jonklein/niex"}
+      {:talib, "~> 0.3.6"}
     ]
   end
 end

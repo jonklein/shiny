@@ -1,16 +1,19 @@
 {
-  "symbols": [ "SPY" ],
+  "symbols": [ "RBLX" ],
   "timeframe": "5m",
-  "strategy": "Shiny.Strategy.GapHoldFade",
+  "strategy": "Shiny.Strategy.HodChallenge",
   "portfolio": {
     "cash": 20000,
-    "slippage": 0.01
+    "slippage": 0.0
   }, 
   "params": { 
-    "symbol": "SPY",
-    "buy_hour": 15,
-    "buy_minute": 20,
-    "sell_hour": 15,
-    "sell_minute": 55
+    "symbol": "RBLX",
+    "hold": 300,
+    "target": 0.4,
+    "stop": 0.4,
+    "open_time": null
+  },
+  "state": {
+    "open_time": null
   }
 }
