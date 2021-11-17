@@ -9,7 +9,12 @@ defmodule Shiny.Strategy do
         config.params
       end
 
-    symbols = [config.params.symbol]
+    symbols =
+      if Kernel.function_exported?(strategy, :symbols, 1) do
+        strategy.symbols(config.params)
+      else
+        [config.params.symbol]
+      end
 
     {strategy, state, symbols}
   end

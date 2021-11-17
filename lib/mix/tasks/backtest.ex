@@ -1,10 +1,13 @@
 defmodule Mix.Tasks.Backtest do
   use Mix.Task
+  require Logger
 
   @shortdoc "Run a backtest"
 
-  def run([config_file | params]) do
+  def run(argv) do
     Mix.Task.run("app.start")
+
+    {config_file, params} = Mix.Tasks.Options.parse(argv)
 
     runs =
       Shiny.Config.from_file!(config_file)
@@ -33,6 +36,8 @@ defmodule Mix.Tasks.Backtest do
   end
 
   def run_config(config, []) do
+    Logger.info(config)
+
     [
       config
       |> Shiny.Backtester.backtest()

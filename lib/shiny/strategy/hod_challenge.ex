@@ -3,7 +3,7 @@ defmodule Shiny.Strategy.HodChallenge do
   import Logger
 
   def symbols(state) do
-    [state.symbol]
+    [state.symbol, "SPY"]
   end
 
   def execute(state, portfolio, bars) do
@@ -48,11 +48,11 @@ defmodule Shiny.Strategy.HodChallenge do
         }
 
       hod ->
-        # Logger.info("Looking for HOD of #{hod.close} at #{current_bar.time}")
+        Logger.debug("Looking for HOD of #{hod.close} at #{current_bar.time}")
         {state, nil}
 
       true ->
-        # Logger.info("Insufficient history for HOD")
+        Logger.debug("Insufficient history for HOD")
         {state, nil}
     end
   end

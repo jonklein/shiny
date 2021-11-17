@@ -1,5 +1,4 @@
 {
-  "symbols": [ "SPY" ],
   "timeframe": "5m",
   "strategy": "Shiny.Strategy.HodChallenge",
   "portfolio": {
