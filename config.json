@@ -1,5 +1,5 @@
 {
-  "symbols": [ "RBLX" ],
+  "symbols": [ "SPY" ],
   "timeframe": "5m",
   "strategy": "Shiny.Strategy.HodChallenge",
   "portfolio": {
@@ -7,10 +7,10 @@
     "slippage": 0.0
   }, 
   "params": { 
-    "symbol": "RBLX",
+    "symbol": "SPY",
     "hold": 300,
-    "target": 0.4,
-    "stop": 0.4,
+    "target": 3.0,
+    "stop": 3.0,
     "open_time": null
   },
   "state": {

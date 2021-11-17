@@ -1,38 +1,48 @@
 defmodule Shiny.Executor do
   require Logger
 
-  def start_link(symbol, strategy) do
-    Task.start_link(__MODULE__, :listen, [symbol, strategy])
+  def start_link(config) do
+    Task.start_link(__MODULE__, :run, [config])
   end
 
-  def listen(symbol, strategy) do
-    loop(%{}, %Shiny.Portfolio{}, symbol, strategy)
+  def run(config) do
+    {strategy, state, symbols} = Shiny.Strategy.from_config(config)
+    loop(config, symbols, state, %Shiny.Portfolio{}, strategy)
   end
 
-  def loop(state, portfolio, symbol, strategy, last_timestamp \\ ~D[1900-01-01]) do
-    Logger.info("Running at #{DateTime.utc_now()}")
-    bars = Shiny.Tradier.History.request(symbol, 3, 3)
-    last = List.last(bars).time
+  def loop(config, symbols, state, portfolio, strategy, last_timestamp \\ ~D[1900-01-01]) do
+    bars =
+      symbols
+      |> Enum.reduce(%{}, fn symbol, acc ->
+        Map.merge(acc, %{
+          symbol => Enum.reverse(Shiny.Tradier.Quotes.request(symbol, config.timeframe, 2))
+        })
+      end)
+
+    last =
+      Map.values(bars)
+      |> Enum.map(&List.first(&1).time)
+      |> Enum.max()
 
     {state, portfolio} =
       if(last > last_timestamp) do
-        # only execture strategy when nquote_streamer.exew bars are received
-        IO.puts("Executing strategy with bar ending at #{last}")
+        # only execute strategy when quote_streamer new bars are received
+        Logger.info("Executing strategy with bar closing #{last}")
         execute_strategy(state, strategy, portfolio, bars)
       else
-        IO.puts("Skipping execution: #{last}, #{last_timestamp}")
+        Logger.info("No new bars, skipping execution with bar closing (#{last})")
         {state, portfolio}
       end
 
     receive do
     after
       20_000 ->
-        loop(state, portfolio, symbol, strategy, last)
+        loop(config, symbols, state, portfolio, strategy, last)
     end
   end
 
   def execute_strategy(state, strategy, portfolio, quotes) do
-    {state, trade} = strategy.execute(state, portfolio, Enum.reverse(quotes))
+    {state, trade} = strategy.execute(state, portfolio, quotes)
 
     portfolio =
       process_trade(

@@ -11,14 +11,18 @@ defmodule Shiny.Config do
   end
 
   def put_param(config, key, value) do
-    put_in(config.params[key], replace(config.params[key], value))
+    put_in(config.params[key], replacement(config.params[key], value))
   end
 
-  defp replace(old_value, new_value) when is_integer(old_value) do
+  defp replacement(old_value, new_value) when is_integer(old_value) do
     elem(Integer.parse(new_value), 0)
   end
 
-  defp replace(old_value, new_value) when is_float(old_value) do
+  defp replacement(old_value, new_value) when is_float(old_value) do
     elem(Float.parse(new_value), 0)
+  end
+
+  defp replacement(_, new_value) do
+    new_value
   end
 end

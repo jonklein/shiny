@@ -3,12 +3,12 @@ defmodule Mix.Tasks.Backtest do
 
   @shortdoc "Run a backtest"
 
-  def run([config_file | rest]) do
+  def run([config_file | params]) do
     Mix.Task.run("app.start")
 
     runs =
       Shiny.Config.from_file!(config_file)
-      |> run_config(rest)
+      |> run_config(params)
 
     # Take list of keyword lists, extract into header & value rows
     rows = [Keyword.keys(Enum.at(runs, 0)) | Enum.map(runs, &Keyword.values(&1))]

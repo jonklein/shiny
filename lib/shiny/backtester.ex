@@ -2,12 +2,12 @@ defmodule Shiny.Backtester do
   require Logger
 
   def backtest(config) do
-    {strategy, state} = Shiny.Strategy.from_config(config)
+    {strategy, state, symbols} = Shiny.Strategy.from_config(config)
 
     bars =
-      config.symbols
+      symbols
       |> Enum.reduce(%{}, fn symbol, acc ->
-        Map.merge(acc, %{symbol => Shiny.Polygon.Quotes.request(symbol, config.timeframe, 30)})
+        Map.merge(acc, %{symbol => Shiny.Tradier.Quotes.request(symbol, config.timeframe, 30)})
       end)
 
     portfolio =

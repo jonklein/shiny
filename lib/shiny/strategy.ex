@@ -9,7 +9,9 @@ defmodule Shiny.Strategy do
         config.params
       end
 
-    {strategy, state}
+    symbols = [config.params.symbol]
+
+    {strategy, state, symbols}
   end
 
   defp resolve_strategy(strategy) do

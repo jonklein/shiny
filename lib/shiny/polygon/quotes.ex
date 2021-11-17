@@ -8,7 +8,7 @@ defmodule Shiny.Polygon.Quotes do
   """
   @spec request(String.t(), String.t(), integer) :: [%Shiny.Bar{}]
   def request(symbol, timeframe, days) do
-    response = Shiny.HttpCache.get!(url(symbol, timeframe, days) |> IO.inspect())
+    {:ok, response} = Shiny.HttpCache.get(url(symbol, timeframe, days) |> IO.inspect())
 
     Jason.decode!(response.body, keys: :atoms).results
     |> Enum.map(fn r ->
