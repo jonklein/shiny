@@ -2,8 +2,7 @@ defmodule Shiny.Tradier.QuoteStreamer do
   @moduledoc """
   Streams market data from Tradier.
 
-  Note: unlike other Tradier calls, streaming requires a production key, so
-  we don't use the `Breaker.Tradier` functions here.
+  Note: unlike other Tradier calls, streaming requires a production key
   """
 
   use WebSockex
@@ -12,15 +11,9 @@ defmodule Shiny.Tradier.QuoteStreamer do
   def start_link(symbols: symbols, callback: callback_pid) do
     {:ok, response} = HTTPoison.post(session_url(), "", headers())
     %{stream: %{url: url, sessionid: sessionID}} = Jason.decode!(response.body, keys: :atoms)
+    url |> IO.inspect()
 
-    {:ok, debouncer} =
-      Breaker.Debouncer.start_link(
-        fn quotes ->
-          Phoenix.PubSub.broadcast(Breaker.PubSub, "quotes", {:quotes, quotes})
-          send(callback_pid, {:quotes, quotes})
-        end,
-        1500
-      )
+    {:ok, debouncer} = Breaker.Debouncer.start_link(&send(callback_pid, {:quotes, &1}), 1500)
 
     {:ok, pid} =
       WebSockex.start_link(
@@ -39,7 +32,7 @@ defmodule Shiny.Tradier.QuoteStreamer do
     {:ok, pid}
   end
 
-  def terminate(reason, state) do
+  def terminate(reason, _) do
     Logger.info("Tradier socket terminating: #{inspect(reason)}")
     exit(:kill)
   end
@@ -64,12 +57,12 @@ defmodule Shiny.Tradier.QuoteStreamer do
   end
 
   def handle_connect(info, state) do
-    Logger.info("Tradier socket connected")
+    Logger.info("Tradier socket connected: #{info}")
     {:ok, state}
   end
 
   defp listen(symbols, sessionID) do
-    Poison.encode!(%{
+    Jason.encode!(%{
       symbols: symbols,
       advancedDetails: false,
       sessionid: sessionID,
@@ -135,8 +128,6 @@ defmodule Shiny.Tradier.QuoteStreamer do
   end
 
   defp update_quotes(quotes, message = %{type: "timesale", symbol: symbol}) do
-    data = Map.get(quotes, symbol, %{})
-
     message |> IO.inspect()
 
     update_symbol(

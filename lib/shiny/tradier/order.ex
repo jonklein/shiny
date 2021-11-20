@@ -1,24 +1,24 @@
 defmodule Shiny.Tradier.Order do
   def create(%Shiny.Tradier.Portfolio{} = portfolio, %Shiny.Order{} = order) do
-    Breaker.Tradier.post(
+    Shiny.Tradier.post(
       path(portfolio.profile.account),
       format_order(order)
     )
   end
 
   def update(%Shiny.Tradier.Portfolio{} = portfolio, %Shiny.Order{} = order) do
-    Breaker.Tradier.put(
+    Shiny.Tradier.put(
       path(portfolio.profile.account, order),
       Map.take(format_order(order), [:price])
     )
   end
 
   def delete(%Shiny.Tradier.Portfolio{} = portfolio, %Shiny.Order{} = order) do
-    Breaker.Tradier.delete(path(portfolio.profile.account, order))
+    Shiny.Tradier.delete(path(portfolio.profile.account, order))
   end
 
   def list(%Shiny.Tradier.Portfolio{} = portfolio) do
-    {:ok, response} = Breaker.Tradier.get(path(portfolio.profile.account))
+    {:ok, response} = Shiny.Tradier.get(path(portfolio.profile.account))
     {:ok, process_orders(response)}
   end
 

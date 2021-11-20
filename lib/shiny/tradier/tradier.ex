@@ -1,4 +1,4 @@
-defmodule Breaker.Tradier do
+defmodule Shiny.Tradier do
   defmacro environment do
     quote do
       System.get_env("TRADIER_ENVIRONMENT")
@@ -6,7 +6,7 @@ defmodule Breaker.Tradier do
   end
 
   def order(portfolio, order) do
-    Breaker.Tradier.Order.create(portfolio, order)
+    Shiny.Tradier.Order.create(portfolio, order)
   end
 
   def get(path) do

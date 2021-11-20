@@ -3,6 +3,8 @@ defmodule Shiny.Config do
   defstruct symbols: [],
             timeframe: "5min",
             strategy: "",
+            data_broker: "",
+            execution_broker: "",
             portfolio: %{},
             params: %{}
 

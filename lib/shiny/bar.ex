@@ -1,7 +1,6 @@
 defmodule Shiny.Bar do
   @defmodule """
   A price bar.
-
   Contains entries for open, high, low, close & volume
   """
 

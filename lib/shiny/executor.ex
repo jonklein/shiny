@@ -15,7 +15,8 @@ defmodule Shiny.Executor do
       symbols
       |> Enum.reduce(%{}, fn symbol, acc ->
         Map.merge(acc, %{
-          symbol => Enum.reverse(Shiny.Tradier.Quotes.request(symbol, config.timeframe, 2))
+          symbol =>
+            Enum.reverse(Shiny.Broker.module("", Quotes).request(symbol, config.timeframe, 2))
         })
       end)
 
@@ -27,10 +28,13 @@ defmodule Shiny.Executor do
     {state, portfolio} =
       if(last > last_timestamp) do
         # only execute strategy when quote_streamer new bars are received
-        Logger.info("Executing strategy with bar closing #{last}")
+        Logger.info("Executing strategy with bar closing #{Calendar.strftime(last, "%c")}")
         execute_strategy(state, strategy, portfolio, bars)
       else
-        Logger.info("No new bars, skipping execution with bar closing (#{last})")
+        Logger.debug(
+          "No new bars, skipping execution with bar closing #{Calendar.strftime(last, "%c")}"
+        )
+
         {state, portfolio}
       end
 

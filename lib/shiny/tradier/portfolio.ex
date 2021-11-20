@@ -23,8 +23,8 @@ defmodule Shiny.Tradier.Portfolio do
   end
 
   def fetch() do
-    {:ok, profile} = Breaker.Tradier.get(profile_path())
-    {:ok, balances} = Breaker.Tradier.get(balances_path(profile.profile.account.account_number))
+    {:ok, profile} = Shiny.Tradier.get(profile_path())
+    {:ok, balances} = Shiny.Tradier.get(balances_path(profile.profile.account.account_number))
     {:ok, positions} = positions(profile)
 
     %Shiny.Tradier.Portfolio{
@@ -35,7 +35,7 @@ defmodule Shiny.Tradier.Portfolio do
   end
 
   defp positions(profile) do
-    {:ok, positions} = Breaker.Tradier.get(positions_path(profile.profile.account.account_number))
+    {:ok, positions} = Shiny.Tradier.get(positions_path(profile.profile.account.account_number))
     {:ok, adjust_positions(positions.positions)}
   end
 

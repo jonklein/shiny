@@ -7,7 +7,10 @@ defmodule Shiny.Backtester do
     bars =
       symbols
       |> Enum.reduce(%{}, fn symbol, acc ->
-        Map.merge(acc, %{symbol => Shiny.Tradier.Quotes.request(symbol, config.timeframe, 30)})
+        Map.merge(acc, %{
+          symbol =>
+            Shiny.Broker.module(config.data_broker, Quotes).request(symbol, config.timeframe, 30)
+        })
       end)
 
     portfolio =

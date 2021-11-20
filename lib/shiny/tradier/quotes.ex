@@ -1,5 +1,7 @@
 defmodule Shiny.Tradier.Quotes do
   def request(symbol, timeframe, days) do
+    days = if timeframe == "1m", do: 24, else: days
+
     f = NaiveDateTime.utc_now()
     start = f |> NaiveDateTime.add(-60 * 60 * 24 * days)
     request(symbol, timeframe, start, f)
@@ -7,7 +9,7 @@ defmodule Shiny.Tradier.Quotes do
 
   def request(symbol, timeframe, start, finish) do
     with {:ok, data} <-
-           Breaker.Tradier.get(url(symbol, timeframe, start, finish))
+           Shiny.Tradier.get(url(symbol, timeframe, start, finish))
            |> parse_response() do
       bars =
         data
@@ -33,7 +35,7 @@ defmodule Shiny.Tradier.Quotes do
     end
   end
 
-  defp url(symbol, timeframe, start, finish) when timeframe == "5m" do
+  defp url(symbol, timeframe, start, finish) when timeframe in ["1m", "5m", "15m"] do
     ts = format_date(start)
     tf = format_date(finish)
 

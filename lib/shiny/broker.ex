@@ -9,6 +9,17 @@ defmodule Shiny.Broker do
     {:ok, %{portfolios: %{}, portfolio: %Shiny.Portfolio{cash: 10000}}}
   end
 
+  def module(broker, module) do
+    broker_mod =
+      case broker do
+        "FTX" -> Shiny.FTX
+        "polygon" -> Shiny.Polygon
+        _ -> Shiny.Tradier
+      end
+
+    Module.concat(broker_mod, module)
+  end
+
   def portfolio(id) do
     GenServer.call(__MODULE__, {:portfolio, id})
   end

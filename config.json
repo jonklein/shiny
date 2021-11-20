@@ -1,18 +1,17 @@
 {
+  "data_broker": "FTX",
   "timeframe": "5m",
   "strategy": "Shiny.Strategy.HodChallenge",
   "portfolio": {
-    "cash": 20000,
+    "cash": 20000.0,
     "slippage": 0.0
   }, 
   "params": { 
-    "symbol": "SPY",
-    "hold": 300,
+    "symbol": "BTC/USD",
+    "hold": 600,
     "target": 3.0,
     "stop": 3.0,
-    "open_time": null
-  },
-  "state": {
-    "open_time": null
+    "trade_time": null,
+    "stop_price": null
   }
 }

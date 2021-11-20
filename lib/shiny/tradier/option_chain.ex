@@ -1,15 +1,15 @@
-defmodule Breaker.Tradier.OptionChain do
+defmodule Shiny.Tradier.OptionChain do
   @moduledoc """
   Fetches option chain data from Tradier
   """
 
   def expirations(symbol) do
-    {:ok, result} = Breaker.Tradier.get(expiration_url(symbol))
+    {:ok, result} = Shiny.Tradier.get(expiration_url(symbol))
     (result.expirations && result.expirations.date) || []
   end
 
   def chain(symbol, expiration) do
-    {:ok, result} = Breaker.Tradier.get(chain_url(symbol, expiration))
+    {:ok, result} = Shiny.Tradier.get(chain_url(symbol, expiration))
     result.options.option
   end
 

@@ -3,7 +3,7 @@ defmodule Shiny.Portfolio do
 
   require Logger
 
-  defstruct cash: 0, positions: [], journal: [], slippage: 0.0
+  defstruct cash: 0.0, positions: [], journal: [], slippage: 0.0
 
   def value(portfolio, quotes) do
     equity_value =
@@ -79,12 +79,14 @@ defmodule Shiny.Portfolio do
 
   def report_trade(journal = %{close: true}) do
     Logger.info(
-      "#{journal.time}: #{journal.symbol} - closing #{journal.shares} @ #{journal.price} PnL #{journal.pnl}"
+      "#{Calendar.strftime(journal.time, "%c")}: #{journal.symbol} @ #{fmt(journal.price)} - close #{fmt(journal.shares)} (pnl #{fmt(journal.pnl)})"
     )
   end
 
   def report_trade(journal) do
-    Logger.info("#{journal.time}: #{journal.symbol} - open #{journal.shares} @ #{journal.price}")
+    Logger.info(
+      "#{Calendar.strftime(journal.time, "%c")}: #{journal.symbol} @ #{fmt(journal.price)} - open  #{fmt(journal.shares)}"
+    )
   end
 
   def sell(portfolio, time, symbol, shares, price) do
@@ -109,9 +111,6 @@ defmodule Shiny.Portfolio do
     Enum.filter(positions, &(&1.shares != 0))
   end
 
-  def report_csv(portfolio) do
-  end
-
   def report(portfolio) do
     closing_trades = Enum.filter(portfolio.journal, & &1.close)
     winning_trades = Enum.filter(closing_trades, &(&1.pnl > 0.0))
@@ -119,24 +118,25 @@ defmodule Shiny.Portfolio do
     pnls = Enum.map(closing_trades, & &1.pnl)
     max_count = max(1, length(closing_trades))
 
-    fmt = &(trunc(&1 * 100) / 100)
     max = &((&1 == [] && 0) || Enum.max(&1))
     min = &((&1 == [] && 0) || Enum.min(&1))
 
     [
-      cash: fmt.(portfolio.cash),
-      win_percent: fmt.(100 * length(winning_trades) / max_count),
+      cash: fmt(portfolio.cash),
+      win_percent: fmt(100 * length(winning_trades) / max_count),
       number_of_trades: length(portfolio.journal),
       number_of_closing_trades: length(closing_trades),
       number_of_profitable_closes: length(winning_trades),
       number_of_losing_closes: length(losing_trades),
-      average_pnl: fmt.(Enum.sum(pnls) / max_count),
-      max_win: fmt.(max.(pnls)),
-      max_loss: fmt.(min.(pnls)),
-      total_pnl: fmt.(Enum.sum(pnls))
+      average_pnl: fmt(Enum.sum(pnls) / max_count),
+      max_win: fmt(max.(pnls)),
+      max_loss: fmt(min.(pnls)),
+      total_pnl: fmt(Enum.sum(pnls))
     ]
   end
 
-  def slip(slippage, price, shares) when shares < 0, do: price * (1.0 - slippage / 100.0)
-  def slip(slippage, price, _), do: price * (1.0 + slippage / 100.0)
+  defp slip(slippage, price, shares) when shares < 0, do: price * (1.0 - slippage / 100.0)
+  defp slip(slippage, price, _), do: price * (1.0 + slippage / 100.0)
+
+  defp fmt(d), do: ExPrintf.sprintf("%.2f", [d * 1.0])
 end

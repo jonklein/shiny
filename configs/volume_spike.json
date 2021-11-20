@@ -3,7 +3,7 @@
   "timeframe": "5m",
   "strategy": "Shiny.Strategy.VolumeSpike",
   "portfolio": {
-    "cash": 20000,
+    "cash": 20000.0,
     "slippage": 0.00
   }, 
   "params": { 

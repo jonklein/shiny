@@ -6,13 +6,14 @@ defmodule Shiny.HttpCache do
 
     case :dets.lookup(:url_cache, Base.encode64(url)) do
       [] ->
+        Logger.debug("#{url} not found in cache")
         response = HTTPoison.get(url, headers)
         :dets.insert(:url_cache, {Base.encode64(url), response})
         :dets.close(:url_cache)
         response
 
-      [{url, value}] ->
-        Logger.info("Using #{url} from cache")
+      [{_, value}] ->
+        Logger.debug("#{url} found in cache")
         value
     end
   end
