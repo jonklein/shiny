@@ -1,23 +1,8 @@
 defmodule Shiny.Strategy.Stochastic do
-  defp performance(bars, period) do
-    now = hd(bars)
-    then = Enum.at(bars, period)
-
-    if now && then do
-      100 * (1.0 - now.close / then.close)
-    else
-      0.0
-    end
-  end
-
-  def execute(state, portfolio, bars) do
+  def execute(state, _, bars) do
     closing = bars[state.symbol] |> Enum.map(& &1.close)
     k = TAlib.Indicators.Stochastic.stochastic_k(closing)
     d = TAlib.Indicators.Stochastic.stochastic_d(closing)
-
-    ph = performance(bars, 12)
-    pd = performance(bars, 12 * 24)
-    pdd = performance(bars, 12 * 24 * 12)
 
     shares = 10000 / 400
 

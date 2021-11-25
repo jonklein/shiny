@@ -84,14 +84,14 @@ defmodule Shiny.FTX.QuoteStreamer do
   defp login_message() do
     ts = timestamp()
 
-    Poison.encode!(%{
+    Jason.encode!(%{
       op: "login",
       args: %{key: System.get_env("FTX_API_KEY"), sign: signature(ts), time: ts}
     })
   end
 
   defp subscribe_message(symbol) do
-    Poison.encode!(%{
+    Jason.encode!(%{
       channel: "ticker",
       market: symbol,
       op: "subscribe"
@@ -99,7 +99,7 @@ defmodule Shiny.FTX.QuoteStreamer do
   end
 
   #  defp unsubscribe_message(symbol) do
-  #    Poison.encode!(%{
+  #    Jason.encode!(%{
   #      channel: "ticker",
   #      market: symbol,
   #      op: "unsubscribe"
@@ -109,14 +109,14 @@ defmodule Shiny.FTX.QuoteStreamer do
   def handle_frame({:text, msg}, state) do
     quotes =
       try do
-        update_quotes(state.quotes, Poison.decode!(msg, keys: :atoms))
+        update_quotes(state.quotes, Jason.decode!(msg, keys: :atoms))
       rescue
         err ->
           IO.inspect(err)
           state.quotes
       end
 
-    Breaker.Debouncer.call(state.debouncer, [quotes])
+    Shiny.Debouncer.call(state.debouncer, [quotes])
 
     {:ok, %{state | quotes: quotes}}
   end
@@ -131,7 +131,7 @@ defmodule Shiny.FTX.QuoteStreamer do
 
   defp update_quotes(
          quotes,
-         message = %{channel: "ticker", market: symbol, type: "update", data: data}
+         %{channel: "ticker", market: symbol, type: "update", data: data}
        ) do
     update_symbol(
       quotes,

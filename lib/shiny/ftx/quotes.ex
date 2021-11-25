@@ -19,7 +19,7 @@ defmodule Shiny.FTX.Quotes do
         |> IO.inspect()
       )
 
-    Enum.map(result |> Enum.reverse(), fn r ->
+    Enum.map(result, fn r ->
       with {:ok, time, 0} <- DateTime.from_iso8601(r.startTime) do
         %Shiny.Bar{
           open: r.open,

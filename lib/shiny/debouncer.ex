@@ -9,7 +9,8 @@ defmodule Shiny.Debouncer do
     {:ok, arg}
   end
 
-  def handle_call({:run, args}, _, state = %{scheduled: true}) do
+  def handle_call({:run, _}, _, state = %{scheduled: true}) do
+    # If already scheduled, noop
     {:reply, nil, state}
   end
 

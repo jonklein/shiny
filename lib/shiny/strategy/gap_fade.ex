@@ -5,21 +5,7 @@ defmodule Shiny.Strategy.GapFade do
   @last_bar_hour 15
   @last_bar_minute 55
 
-  def init([symbol]) do
-    %{
-      symbol: "SPY"
-    }
-  end
-
-  def params([symbol]) do
-    %{
-      symbol: "SPY",
-      symbols: ["SPY"],
-      portfolio_value: 100_000
-    }
-  end
-
-  def execute(state, portfolio, bars) do
+  def execute(state, _, bars) do
     current_bar = Enum.at(bars[state.symbol], 0)
     opening = opening_bars(bars[state.symbol])
     closing = closing_bars(bars[state.symbol])

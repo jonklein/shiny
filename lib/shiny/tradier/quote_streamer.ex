@@ -13,7 +13,7 @@ defmodule Shiny.Tradier.QuoteStreamer do
     %{stream: %{url: url, sessionid: sessionID}} = Jason.decode!(response.body, keys: :atoms)
     url |> IO.inspect()
 
-    {:ok, debouncer} = Breaker.Debouncer.start_link(&send(callback_pid, {:quotes, &1}), 1500)
+    {:ok, debouncer} = Shiny.Debouncer.start_link(&send(callback_pid, {:quotes, &1}), 1500)
 
     {:ok, pid} =
       WebSockex.start_link(
@@ -80,7 +80,7 @@ defmodule Shiny.Tradier.QuoteStreamer do
           state.quotes
       end
 
-    Breaker.Debouncer.call(state.debouncer, [quotes])
+    Shiny.Debouncer.call(state.debouncer, [quotes])
 
     {:ok, %{state | quotes: quotes}}
   end

@@ -1,5 +1,5 @@
 defmodule Shiny.Strategy.GapHoldFade do
-  def execute(state, portfolio, bars) do
+  def execute(state, _, bars) do
     current_bar = Enum.at(bars[state.symbol], 0)
     opening = opening_bars(state, bars[state.symbol])
     closing = closing_bars(state, bars[state.symbol])

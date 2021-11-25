@@ -15,7 +15,6 @@ defmodule Shiny.FTX.Request do
   end
 
   def post(path, data \\ %{}) do
-    body = Poison.encode(data)
     {:ok, result} = HTTPoison.post(url(path), Jason.encode(data), headers("POST", path, data))
     parse_response(result)
   end

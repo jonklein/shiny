@@ -5,7 +5,7 @@ defmodule Shiny.Strategy.LRSI do
     Map.merge(params, %{bar_count: nil, stop: nil})
   end
 
-  def manage(state, portolio, bars) do
+  def manage(state, _, _) do
     {state, nil}
   end
 
@@ -29,9 +29,8 @@ defmodule Shiny.Strategy.LRSI do
 
   def execute(state, portfolio, bars) do
     [current | _] = bars[state.symbol]
-    closes = Enum.map(bars[state.symbol], & &1.close)
 
-    lrsi2 = Breaker.Ta.lrsi(Enum.slice(Enum.map(bars[state.symbol], & &1.close), 0..20))
+    lrsi2 = Shiny.Ta.lrsi(Enum.slice(Enum.map(bars[state.symbol], & &1.close), 0..20))
 
     vol =
       Enum.slice(bars[state.symbol], 0..2)

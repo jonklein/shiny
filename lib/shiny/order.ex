@@ -1,5 +1,5 @@
 defmodule Shiny.Order do
-  @defmodule """
+  @moduledoc """
   Defines an order output of a strategy.
 
   `type` is one of :buy, :sell or :close

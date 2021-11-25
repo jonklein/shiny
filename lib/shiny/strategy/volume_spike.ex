@@ -5,17 +5,17 @@ defmodule Shiny.Strategy.VolumeSpike do
     Map.merge(params, %{stop: nil, target: nil})
   end
 
-  defp lower_closes([d1, d2 | rest]) do
-    if d1.close < d2.close do
-      1 + lower_closes([d2 | rest])
-    else
-      0
-    end
-  end
-
-  defp lower_closes(_) do
-    0
-  end
+  #  defp lower_closes([d1, d2 | rest]) do
+  #    if d1.close < d2.close do
+  #      1 + lower_closes([d2 | rest])
+  #    else
+  #      0
+  #    end
+  #  end
+  #
+  #  defp lower_closes(_) do
+  #    0
+  #  end
 
   defp higher_closes([d1, d2 | rest]) do
     if d1.close > d2.close do
@@ -29,7 +29,7 @@ defmodule Shiny.Strategy.VolumeSpike do
     0
   end
 
-  def manage(state, portolio, bars) do
+  def manage(state, _, _) do
     {state, nil}
   end
 
@@ -65,7 +65,7 @@ defmodule Shiny.Strategy.VolumeSpike do
     end
   end
 
-  def execute(state, portfolio, bars) do
+  def execute(state, _, bars) do
     [current | rest] = bars[state.symbol]
     previous = Enum.at(rest, 0)
 
