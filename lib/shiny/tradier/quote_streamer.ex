@@ -8,10 +8,9 @@ defmodule Shiny.Tradier.QuoteStreamer do
   use WebSockex
   require Logger
 
-  def start_link(symbols: symbols, callback: callback_pid) do
+  def start_link(symbols, callback_pid) do
     {:ok, response} = HTTPoison.post(session_url(), "", headers())
-    %{stream: %{url: url, sessionid: sessionID}} = Jason.decode!(response.body, keys: :atoms)
-    url |> IO.inspect()
+    %{stream: %{sessionid: sessionID}} = Jason.decode!(response.body, keys: :atoms)
 
     {:ok, debouncer} = Shiny.Debouncer.start_link(&send(callback_pid, {:quotes, &1}), 1500)
 
@@ -57,7 +56,7 @@ defmodule Shiny.Tradier.QuoteStreamer do
   end
 
   def handle_connect(info, state) do
-    Logger.info("Tradier socket connected: #{info}")
+    Logger.info("Tradier socket connected: #{inspect(info)}")
     {:ok, state}
   end
 

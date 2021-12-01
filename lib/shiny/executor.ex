@@ -7,18 +7,43 @@ defmodule Shiny.Executor do
 
   def run(config) do
     {strategy, state, symbols} = Shiny.Strategy.from_config(config)
-    loop(config, symbols, state, %Shiny.Portfolio{}, strategy)
-  end
 
-  def loop(config, symbols, state, portfolio, strategy, last_timestamp \\ ~D[1900-01-01]) do
-    bars =
-      symbols
-      |> Enum.reduce(%{}, fn symbol, acc ->
+    histories =
+      Enum.reduce(symbols, %{}, fn sym, acc ->
         Map.merge(acc, %{
-          symbol =>
-            Enum.reverse(Shiny.Broker.module("", Quotes).request(symbol, config.timeframe, 2))
+          sym => Shiny.Broker.module(config.data_broker, Quotes).request(sym, config.timeframe, 2)
         })
       end)
+
+    Shiny.Broker.module(config.data_broker, QuoteStreamer).start_link(symbols, self())
+
+    loop(config, histories, state, %Shiny.Portfolio{}, strategy)
+  end
+
+  def loop(config, histories, state, portfolio, strategy, last_timestamp \\ ~D[1900-01-01]) do
+    {state, portfolio, last_timestamp} =
+      receive do
+        {:quotes, quotes} ->
+          IO.inspect("received #{inspect(quotes)}")
+
+          histories =
+            Enum.reduce(quotes, histories, fn {sym, quote}, acc ->
+              Map.merge(histories, %{sym => Shiny.Histories.add_quote(histories[sym], quote)})
+            end)
+
+          process(histories, state, portfolio, strategy, last_timestamp)
+      after
+        20_000 ->
+          {state, portfolio, last_timestamp}
+      end
+
+    loop(config, histories, state, portfolio, strategy, last_timestamp)
+  end
+
+  defp process(histories, state, portfolio, strategy, last_timestamp) do
+    bars =
+      histories
+      |> Enum.reduce(%{}, fn {sym, history}, acc -> Map.merge(acc, %{sym => history.bars}) end)
 
     last =
       Map.values(bars)
@@ -38,11 +63,7 @@ defmodule Shiny.Executor do
         {state, portfolio}
       end
 
-    receive do
-    after
-      20_000 ->
-        loop(config, symbols, state, portfolio, strategy, last)
-    end
+    {state, portfolio, last}
   end
 
   def execute_strategy(state, strategy, portfolio, quotes) do

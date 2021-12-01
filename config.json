@@ -1,6 +1,7 @@
 {
   "timeframe": "5m",
   "strategy": "Shiny.Strategy.HodChallenge",
+  "data_broker": "",
   "portfolio": {
     "cash": 20000.0,
     "slippage": 0.0

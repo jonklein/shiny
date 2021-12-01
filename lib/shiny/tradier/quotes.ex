@@ -13,7 +13,6 @@ defmodule Shiny.Tradier.Quotes do
            |> parse_response() do
       bars =
         data
-        |> Enum.reverse()
         |> Enum.map(fn d ->
           {:ok, t} = DateTime.from_unix(d.timestamp)
 
@@ -28,7 +27,6 @@ defmodule Shiny.Tradier.Quotes do
         end)
 
       Shiny.Histories.new(bars: bars, timescale: timeframe, symbol: symbol)
-      bars |> Enum.reverse()
     else
       _ ->
         nil

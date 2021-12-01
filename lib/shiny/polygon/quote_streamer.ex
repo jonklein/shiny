@@ -10,19 +10,20 @@ defmodule Shiny.Polygon.QuoteStreamer do
     "wss://socket.polygon.io/stocks"
   end
 
-  def start_link(_symbols) do
-    {:ok, pid} = WebSockex.start_link(url(), __MODULE__, %{})
+  def start_link(symbols, callback) do
+    {:ok, pid} = WebSockex.start_link(url(), __MODULE__, %{callback: callback, symbols: symbols})
     WebSockex.send_frame(pid, {:text, auth()})
     WebSockex.send_frame(pid, {:text, listen()})
     {:ok, pid}
   end
 
   defp auth() do
-    Jason.encode!(%{action: "auth", params: System.get_env("ALPACA_API_KEY")})
+    api_key = System.get_env("POLYGON_API_KEY")
+    Jason.encode!(%{action: "auth", params: api_key})
   end
 
   defp listen() do
-    Jason.encode!(%{action: "subscribe", params: "Q.SPY,A.SPY"})
+    Jason.encode!(%{action: "subscribe", params: "SPY"})
   end
 
   def handle_connect(_conn, state) do

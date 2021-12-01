@@ -6,7 +6,7 @@ defmodule Shiny.FTX.QuoteStreamer do
   use WebSockex
   require Logger
 
-  def start_link(symbols: symbols, callback: callback_pid) do
+  def start_link(symbols, callback_pid) do
     {:ok, debouncer} =
       Shiny.Debouncer.start_link(
         fn quotes ->

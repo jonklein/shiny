@@ -13,7 +13,7 @@ defmodule Shiny.Broker do
     broker_mod =
       case broker do
         "FTX" -> Shiny.FTX
-        "polygon" -> Shiny.Polygon
+        "Polygon" -> Shiny.Polygon
         _ -> Shiny.Tradier
       end
 

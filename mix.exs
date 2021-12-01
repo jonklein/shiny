@@ -13,13 +13,13 @@ defmodule Shiny.MixProject do
 
   def application do
     [
-      extra_applications: [:logger]
+      extra_applications: [:logger, :ssl]
     ]
   end
 
   defp deps do
     [
-      {:websockex, "~> 0.4.2"},
+      {:websockex, "~> 0.4.3"},
       {:exprintf, "~> 0.2.1"},
       {:hackney, "~> 1.17.0"},
       {:jason, "~> 1.2"},
